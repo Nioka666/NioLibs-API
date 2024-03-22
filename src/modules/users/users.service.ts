@@ -1,14 +1,21 @@
 import { Injectable } from "@nestjs/common";
 import { usersList } from "./data/usersList";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly prisma: PrismaService) {}
+
   sayHello(res: any) {
     return res.status(200).send({ message: "Users Route", status: 200 });
   }
 
-  async findAll(res: any): Promise<any> {
-    return res.status(200).send({ usersList: usersList });
+  async findOne(key: string) {
+    return this.prisma.users.findFirst({
+      where: {
+        username: key,
+      },
+    });
   }
 
   async userSignUp(username: string, pass: string): Promise<any> {

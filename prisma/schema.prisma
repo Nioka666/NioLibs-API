@@ -13,6 +13,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AdminRoles {
+  Admin
+  Petugas
+}
+
+model Admins {
+  id                String     @id @default(auto()) @map("_id") @db.ObjectId
+  nama_lengkap      String
+  username          String     @unique
+  email             String     @unique
+  password          String
+  level             AdminRoles
+  tanggal_bergabung DateTime
+}
+
 model Users {
   id                String    @id @default(auto()) @map("_id") @db.ObjectId
   nama_lengkap      String?
@@ -25,12 +40,15 @@ model Users {
   @@map("users")
 }
 
-model Posts {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  content   String?
-  published Boolean? @default(false)
-  usersId   String?  @db.ObjectId
+model Bukus {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  judul        String
+  cover        String
+  stok         Int
+  penulis      String
+  penerbit     String
+  deskripsi    String
+  tahun_terbit DateTime
 
-  @@map("posts")
+  @@map("bukus")
 }

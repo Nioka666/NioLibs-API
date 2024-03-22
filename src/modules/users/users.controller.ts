@@ -14,15 +14,14 @@ export class UsersController {
     return this.service.sayHello(res);
   }
 
-  @Get("/list")
-  findAll(@Res() res: any) {
-    return this.service.findAll(res);
-  }
-
   @Get("/db-list")
   async showAll() {
-    const result = await this.prisma.users.findMany();
-    return result;
+    return await this.prisma.users.findMany();
+  }
+
+  @Get("/find")
+  async findOne(@Query("key") key: string) {
+    return this.service.findOne(key);
   }
 
   @Get("sign-up")
