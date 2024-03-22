@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { usersList } from "./data/usersList";
+import * as bcrypt from "bcrypt";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -20,12 +20,15 @@ export class UsersService {
 
   async userSignUp(username: string, pass: string): Promise<any> {
     if (username && pass) {
+      const saltRounds = 10;
+      const hashedPass = await bcrypt.hash(pass, saltRounds);
+
       return this.prisma.users.create({
         data: {
           nama_lengkap: "Nama Lengkap",
           username: username,
           email: "email@gmail.com",
-          password: pass,
+          password: hashedPass,
           alamat: null,
           tanggal_bergabung: new Date(),
         },
@@ -34,6 +37,35 @@ export class UsersService {
       return {
         statusCode: 301,
         message: "Sign Up Failed..",
+      };
+    }
+  }
+
+  async userSignIn(username: string, pass: string) {
+    const currentUser = await this.prisma.users.findFirst({
+      where: {
+        username: username,
+      },
+    });
+
+    if (!currentUser) {
+      return {
+        statusCode: 500,
+        message: "internal service error",
+      };
+    }
+
+    const isMatch = await bcrypt.compare(pass, currentUser?.password);
+
+    if (isMatch) {
+      return {
+        statusCode: 200,
+        message: "sign in successfully",
+      };
+    } else {
+      return {
+        statusCode: 301,
+        message: "sign in failed",
       };
     }
   }

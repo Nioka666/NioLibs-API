@@ -25,10 +25,18 @@ export class UsersController {
   }
 
   @Get("sign-up")
-  async userSignIn(
+  async userSignUp(
     @Query("username") username: string,
     @Query("pass") pass: string,
   ): Promise<any> {
     return this.service.userSignUp(username, pass);
+  }
+
+  @Get("sign-in")
+  async userSignIn(
+    @Query("username") username: string,
+    @Query("pass") pass: string,
+  ): Promise<any> {
+    return this.service.userSignIn(username, pass);
   }
 }
