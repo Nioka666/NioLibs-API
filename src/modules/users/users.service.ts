@@ -20,14 +20,16 @@ export class UsersService {
 
   async userSignUp(username: string, pass: string): Promise<any> {
     if (username && pass) {
-      return {
-        statusCode: 200,
-        message: "Sign Up Successfully",
-        newUser: {
+      return this.prisma.users.create({
+        data: {
+          nama_lengkap: "Nama Lengkap",
           username: username,
+          email: "email@gmail.com",
           password: pass,
+          alamat: null,
+          tanggal_bergabung: new Date(),
         },
-      };
+      });
     } else {
       return {
         statusCode: 301,
