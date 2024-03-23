@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { PrismaService } from "src/prisma/prisma.service";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class UsersService {
@@ -18,33 +19,41 @@ export class UsersService {
     });
   }
 
-  async userSignUp(username: string, pass: string): Promise<any> {
-    if (username && pass) {
+  async userSignUp(userData: Prisma.UsersWhereUniqueInput): Promise<any> {
+    if (userData.username && userData.password) {
       const saltRounds = 10;
-      const hashedPass = await bcrypt.hash(pass, saltRounds);
+      const userPass: any = userData.password;
+      const hashedPass = await bcrypt.hash(userPass, saltRounds);
 
-      return this.prisma.users.create({
-        data: {
-          nama_lengkap: "Nama Lengkap",
-          username: username,
-          email: "email@gmail.com",
-          password: hashedPass,
-          alamat: null,
-          tanggal_bergabung: new Date(),
-        },
-      });
+      try {
+        return await this.prisma.users.create({
+          data: {
+            nama_lengkap: "Nama Lengkap",
+            username: userData.username,
+            email: "email@gmail.com",
+            password: hashedPass,
+            alamat: null,
+            tanggal_bergabung: new Date(),
+          },
+        });
+      } catch (error) {
+        return {
+          statusCode: 400,
+          message: error,
+        };
+      }
     } else {
       return {
-        statusCode: 301,
-        message: "Sign Up Failed..",
+        statusCode: 400,
+        message: "Bad Request: Unknown",
       };
     }
   }
 
-  async userSignIn(username: string, pass: string) {
-    const currentUser = await this.prisma.users.findFirst({
+  async userSignIn(userData: Prisma.UsersWhereUniqueInput) {
+    const currentUser = await this.prisma.users.findUnique({
       where: {
-        username: username,
+        username: userData.username,
       },
     });
 
@@ -55,12 +64,13 @@ export class UsersService {
       };
     }
 
+    const pass: any = userData.password;
     const isMatch = await bcrypt.compare(pass, currentUser?.password);
 
     if (isMatch) {
       return {
         statusCode: 200,
-        message: "sign in successfully",
+        message: `${currentUser?.password}`,
       };
     } else {
       return {
