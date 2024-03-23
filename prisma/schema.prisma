@@ -20,19 +20,21 @@ enum AdminRoles {
 
 model Admins {
   id                String     @id @default(auto()) @map("_id") @db.ObjectId
-  nama_lengkap      String
+  nama_lengkap      String?
   username          String     @unique
   email             String     @unique
   password          String
   level             AdminRoles
-  tanggal_bergabung DateTime
+  tanggal_bergabung DateTime?
+
+  @@map("admins")
 }
 
 model Users {
   id                String    @id @default(auto()) @map("_id") @db.ObjectId
   nama_lengkap      String?
   username          String    @unique
-  email             String    @unique
+  email             String?
   password          String
   alamat            String?
   tanggal_bergabung DateTime?
