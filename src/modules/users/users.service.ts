@@ -51,31 +51,37 @@ export class UsersService {
   }
 
   async userSignIn(userData: Prisma.UsersWhereUniqueInput) {
-    const currentUser = await this.prisma.users.findUnique({
-      where: {
-        username: userData.username,
-      },
-    });
+    if (userData) {
+      const currentUser = await this.prisma.users.findUnique({
+        where: {
+          username: userData.username,
+        },
+      });
 
-    if (!currentUser) {
-      return {
-        statusCode: 500,
-        message: "internal service error",
-      };
-    }
+      if (!currentUser) {
+        return {
+          statusCode: 500,
+          message: "internal service error",
+        };
+      }
 
-    const pass: any = userData.password;
-    const isMatch = await bcrypt.compare(pass, currentUser?.password);
+      const pass: any = userData.password;
+      const isMatch = await bcrypt.compare(pass, currentUser?.password);
 
-    if (isMatch) {
-      return {
-        statusCode: 200,
-        message: `${currentUser?.password}`,
-      };
+      if (isMatch) {
+        return {
+          statusCode: 200,
+          message: "Sign In Successfully!",
+        };
+      } else {
+        return {
+          statusCode: 301,
+          message: "Sign In Failed",
+        };
+      }
     } else {
       return {
-        statusCode: 301,
-        message: "sign in failed",
+        msg: "throw",
       };
     }
   }
