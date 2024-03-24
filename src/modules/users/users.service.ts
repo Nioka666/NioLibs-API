@@ -7,8 +7,8 @@ import { Prisma } from "@prisma/client";
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  sayHello(res: any) {
-    return res.status(200).send({ message: "Users Route", status: 200 });
+  showAll() {
+    return this.prisma.users.findMany();
   }
 
   async findOne(key: string) {

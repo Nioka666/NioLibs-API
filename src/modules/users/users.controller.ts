@@ -9,9 +9,9 @@ export class UsersController {
     private readonly prisma: PrismaService,
   ) {}
 
-  @Get()
-  sayHello(@Res() res: any) {
-    return this.service.sayHello(res);
+  @Get("/")
+  showAll() {
+    return this.service.showAll();
   }
 
   @Get("/find")
@@ -24,7 +24,7 @@ export class UsersController {
     @Body() userData: { username: string; password: string },
   ): Promise<any> {
     const { username, password } = userData;
-    return this.service.userSignUp({username, password});
+    return this.service.userSignUp({ username, password });
   }
 
   @Post("/sign-in")
